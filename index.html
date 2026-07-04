@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunset Spots — find tonight's best viewpoint</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <header id="masthead">
+        <h1>🌇 Sunset Spots</h1>
+        <p class="tagline">Drive-up viewpoints for tonight's golden hour</p>
+      </header>
+
+      <section id="controls">
+        <div class="search-row">
+          <input id="place-input" type="search" placeholder="Town, postcode or place…"
+                 autocomplete="off" spellcheck="false">
+          <button id="search-btn" title="Search this place">Search</button>
+        </div>
+        <div class="search-row">
+          <button id="locate-btn" class="wide">📍 Use my location</button>
+        </div>
+        <label class="radius-row">
+          Search radius: <strong><span id="radius-label">20</span> km</strong>
+          <input id="radius-input" type="range" min="5" max="40" step="5" value="20">
+        </label>
+      </section>
+
+      <section id="sun-banner" hidden>
+        <div class="sun-fact"><span class="k">Sunset</span><span class="v" id="sunset-time">–</span></div>
+        <div class="sun-fact"><span class="k">Direction</span><span class="v" id="sunset-az">–</span></div>
+        <div class="sun-fact"><span class="k">Date</span><span class="v" id="sunset-date">–</span></div>
+      </section>
+
+      <div id="status" hidden></div>
+
+      <ol id="results"></ol>
+
+      <footer id="credits">
+        Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+        contributors · elevation via <a href="https://open-elevation.com" target="_blank" rel="noopener">Open-Elevation</a>
+        · geocoding via Nominatim
+      </footer>
+    </aside>
+    <div id="map"></div>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
