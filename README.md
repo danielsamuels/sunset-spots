@@ -23,8 +23,14 @@ Browser geolocation requires a secure context, so "Use my location" works on
 the live HTTPS site and `http://localhost`, but not plain `file://` / LAN-IP
 HTTP. The place search works anywhere.
 
-Deployment is automatic: every push to `main` republishes the site to GitHub
-Pages via `.github/workflows/deploy-pages.yml`.
+## Deploying
+
+The site is served by GitHub Pages from the **`gh-pages` branch** (root). To
+publish the current state of `main`:
+
+```sh
+git push origin main:gh-pages
+```
 
 ## How it works
 
