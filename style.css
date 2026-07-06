@@ -34,10 +34,57 @@ html, body {
   overflow: hidden;
 }
 
-#map {
+#map-wrap {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
   background: #111;
+}
+
+#map-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1200; /* above Leaflet panes and controls */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(1.5px);
+}
+
+#map-overlay[hidden] { display: none; }
+
+#overlay-text {
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(226, 232, 240, 0.25);
+  border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.5s; }
 }
 
 #masthead {
@@ -239,7 +286,7 @@ button.wide:hover { background: #33415c; }
 @media (max-width: 720px) {
   #app { flex-direction: column; }
   #sidebar { width: 100%; min-width: 0; height: 55%; order: 2; }
-  #map { height: 45%; order: 1; }
+  #map-wrap { height: 45%; flex: none; order: 1; }
 }
 
 .hint {

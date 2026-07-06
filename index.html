@@ -47,7 +47,13 @@
         · geocoding via Nominatim
       </footer>
     </aside>
-    <div id="map"></div>
+    <div id="map-wrap">
+      <div id="map"></div>
+      <div id="map-overlay" hidden>
+        <div class="spinner" role="status" aria-label="Searching"></div>
+        <p id="overlay-text">Finding sunset spots…</p>
+      </div>
+    </div>
   </div>
 
   <script src="vendor/leaflet/leaflet.js"></script>

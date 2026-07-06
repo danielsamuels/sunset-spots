@@ -459,10 +459,21 @@ const state = {
 
 function setStatus(msg, kind = 'info') {
   const el = $('status');
-  if (!msg) { el.hidden = true; return; }
+  if (!msg) { el.hidden = true; el.textContent = ''; return; }
   el.hidden = false;
   el.textContent = msg;
   el.dataset.kind = kind;
+  // Mirror progress messages onto the map overlay while it's up.
+  if (kind === 'info' && !$('map-overlay').hidden) {
+    $('overlay-text').textContent = msg;
+  }
+}
+
+/** Grey out the map with a spinner while a search runs. */
+function setOverlay(visible) {
+  const el = $('map-overlay');
+  el.hidden = !visible;
+  if (visible) $('overlay-text').textContent = 'Finding sunset spots…';
 }
 
 function fmtDist(m) {
@@ -484,6 +495,7 @@ function compass(azimuth) {
 async function runSearch(centre, label) {
   if (state.searching) return;
   state.searching = true;
+  setOverlay(true);
   $('results').innerHTML = '';
   $('sun-banner').hidden = true;
   state.markerLayer.clearLayers();
@@ -591,6 +603,7 @@ async function runSearch(centre, label) {
     setStatus(err.message, 'error');
   } finally {
     state.searching = false;
+    setOverlay(false);
   }
 }
 
@@ -719,6 +732,7 @@ function init() {
   state.map.on('click', async (e) => {
     if (state.searching) return;
     const p = { lat: e.latlng.lat, lng: e.latlng.lng };
+    setOverlay(true); // instant feedback while the place name resolves
     setStatus('Looking up that spot…');
     runSearch(p, await reverseLabel(p));
   });
