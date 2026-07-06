@@ -34,8 +34,9 @@ git push origin main:gh-pages
 
 ## How it works
 
-1. **Location** — browser geolocation, or Nominatim place search restricted to
-   `countrycodes=gb`. Locations outside a UK bounding box are rejected.
+1. **Location** — browser geolocation, a Nominatim place search restricted to
+   `countrycodes=gb`, or a click anywhere on the map. Locations outside a UK
+   bounding box are rejected.
 2. **Sunset** — tonight's sunset time and azimuth (compass direction of the
    setting sun) are computed locally with the standard SunCalc formulas. If the
    sun has already set, it plans for tomorrow instead.

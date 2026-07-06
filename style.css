@@ -241,3 +241,9 @@ button.wide:hover { background: #33415c; }
   #sidebar { width: 100%; min-width: 0; height: 55%; order: 2; }
   #map { height: 45%; order: 1; }
 }
+
+.hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}

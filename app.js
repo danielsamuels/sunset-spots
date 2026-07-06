@@ -162,6 +162,21 @@ async function geocodeUK(query) {
   };
 }
 
+/** Best-effort place name for a map click; falls back to coordinates. */
+async function reverseLabel(p) {
+  try {
+    const url = 'https://nominatim.openstreetmap.org/reverse?' + new URLSearchParams({
+      lat: p.lat.toFixed(5), lon: p.lng.toFixed(5), format: 'jsonv2', zoom: '14',
+    });
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (res.ok) {
+      const hit = await res.json();
+      if (hit.display_name) return hit.display_name.split(',').slice(0, 2).join(',');
+    }
+  } catch { /* fall through to coordinates */ }
+  return `Dropped pin (${p.lat.toFixed(3)}, ${p.lng.toFixed(3)})`;
+}
+
 /** Phase 1: just the candidate spots within the search radius. Cheap. */
 function candidatesQuery(centre, radiusM) {
   const around = `(around:${radiusM},${centre.lat.toFixed(5)},${centre.lng.toFixed(5)})`;
@@ -499,6 +514,7 @@ async function runSearch(centre, label) {
     state.map.setView([centre.lat, centre.lng], 11);
     L.circleMarker([centre.lat, centre.lng], {
       radius: 7, color: '#fff', weight: 2, fillColor: '#3b82f6', fillOpacity: 1,
+      bubblingMouseEvents: false, // clicking the pin must not start a new search
     }).bindPopup(`<b>${label}</b>`).addTo(state.markerLayer);
 
     const radiusM = Number($('radius-input').value) * 1000;
@@ -607,6 +623,7 @@ function renderResults(spots, sunsetAzimuth, excludedCount) {
       radius: i === 0 ? 10 : 8,
       color: '#1e293b', weight: 1.5,
       fillColor: colour, fillOpacity: 0.95,
+      bubblingMouseEvents: false, // selecting a spot must not start a new search
     }).addTo(state.markerLayer);
     marker.bindPopup(`<b>${i + 1}. ${spotName(c)}</b><br>${KIND_LABEL[c.kind]} · score ${c.score}`);
     marker.on('click', () => selectSpot(c, sunsetAzimuth));
@@ -666,6 +683,7 @@ function selectSpot(c, sunsetAzimuth) {
   const far = destination(c, sunsetAzimuth, 6000);
   L.polyline([[c.lat, c.lng], [far.lat, far.lng]], {
     color: '#f97316', weight: 3, dashArray: '6 8', opacity: 0.9,
+    interactive: false, // the ray shouldn't swallow map clicks
   }).addTo(state.rayLayer);
   L.marker([far.lat, far.lng], {
     icon: L.divIcon({ className: 'sun-icon', html: '☀️', iconSize: [24, 24] }),
@@ -696,6 +714,14 @@ function init() {
   L.control.layers({ 'Street map': street, 'Terrain': topo }).addTo(state.map);
   state.markerLayer = L.layerGroup().addTo(state.map);
   state.rayLayer = L.layerGroup().addTo(state.map);
+
+  // Click anywhere on the map to search from that point.
+  state.map.on('click', async (e) => {
+    if (state.searching) return;
+    const p = { lat: e.latlng.lat, lng: e.latlng.lng };
+    setStatus('Looking up that spot…');
+    runSearch(p, await reverseLabel(p));
+  });
 
   $('radius-input').addEventListener('input', () => {
     $('radius-label').textContent = $('radius-input').value;
